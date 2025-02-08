@@ -17,7 +17,7 @@ matches(regex)
 replace(search, replace)
 trim()
 System.out.println(string);
-String.valueOf(digitChar) - // TODO - why this and not tostring? 
+String.valueOf(primitve) 
 Integer.parseInt(string);
 
 Scanner sc = new Scanner(System.in);
@@ -427,6 +427,43 @@ while (input.hasNext()){
     int number = input.nextInt();
 }
 input.close(); 
+```
+### PrintStream
+```
+PrintStream ps = new PrintStream(System.out);
+ps.println("Hello, PrintStream!");
+ps.printf("Formatted: %d%n", 100);
+ps.close();
+```
+### DataStream
+write/read primitive types to binary form
+```
+DataOutputStream dos = new DataOutputStream(new FileOutputStream("data.bin"));
+dos.writeInt(42);
+dos.writeDouble(3.14);
+dos.writeBoolean(true);
+dos.close();
+DataInputStream dis = new DataInputStream(new FileInputStream("data.bin"))
+int intValue = dis.readInt();
+double doubleValue = dis.readDouble();
+```
+### LineNumberInputStream 
+keeps track of line number
+```
+LineNumberInputStream lnStream = new LineNumberInputStream(fis);
+int data;
+while ((data = lnStream.read()) != -1) {
+    System.out.println("Line number: " + lnStream.getLineNumber() + " - " + (char) data);
+}
+```
+
+### PushbackInputStream
+has unread() method
+```
+PushbackInputStream pbis = new PushbackInputStream(bais);
+int ch = pbis.read();
+pbis.unread(ch); 
+System.out.println((char) pbis.read());
 ```
 
 ### I/O Class Hierarchy
@@ -920,6 +957,7 @@ in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 DatagramSocket socket = new DatagramSocket()
 
 socket.send(new DatagramPacket(data, data.length,  InetAddress.getByName(server), port)); // throws IOException
+byte[] data = new byte[1];
 DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 socket.receive(receivePacket); // throws IOException
 
@@ -938,3 +976,52 @@ socket.send(new DatagramPacket(data, data.length, receivePacket.getAddress(), re
 # Note:
 - Check if parameters are null or length is 0
 - Pay attention to types in signatures (i.e `equals(MyClass) or equals(Object))
+- "Exception" must be declared or caught
+- Different package → Only accessible through inheritance (i.e., super.variable) (not directly)
+- "Dynamic linking" - in inheritance
+- Two methods cannot be with same signatures except "static"
+- ? cannot be used in generic function signature, can be used in its parameters (i.e ArrayList<? extends String>)
+# Marked
+```
+# General
+String.valueOf
+arraylist.addAll(arraylist);
+ArrayList<String> arraylist = new ArrayList<String>(Arrays.asList(array));
+String[] array = arraylist.toArray(new String[0]);
+
+int[] numbers = IntStream.generate(() -> rand.nextInt(bound)).limit(n).toArray();
+ArrayList<String> arraylist2 = (ArrayList<String>) Arrays.stream(arraylist.toArray(new MyClass[0])).map(item -> item + "!").collect(Collectors.toCollection(ArrayList::new))); // to convert to array: .toArray(MyClass[]::new)
+IntStream.range(begin, end).mapToObj(String::valueOf).toArray(String[]::new)
+
+Button button = new Button("Done");
+button.setId("doneButton")
+gridPane.add(button, col, row);
+button.setOnAction(method) 
+
+syncThread = new Thread(new Task<Void>() {
+    @Override
+    protected Void call() {
+        return null;
+    }
+});
+155 - generic implementation
+
+# TCP
+socket = new Socket(server, port); // throws UnknownHostException, IOException
+ServerSocket serverSocket = new ServerSocket(PORT); // throws IOException
+Socket socket = serverSocket.accept();  // throws IOException
+in = socket.getInputStream();  // throws IOException
+out = socket.getOutputStream(); // throws IOException
+String host = socket.getInetAddress().getHostName;
+
+## UDP
+DatagramSocket socket = new DatagramSocket()
+socket.send(new DatagramPacket(data, data.length,  InetAddress.getByName(server), port)); // throws IOException
+DatagramSocket socket = new DatagramSocket(PORT);
+byte[] data = new byte[1];
+DatagramPacket receivePacket = new DatagramPacket(data, data.length); // throws IOException
+socket.send(new DatagramPacket(data, data.length, receivePacket.getAddress(), receivePacket.getPort()));
+
+# Note:
+- (from above)
+```
