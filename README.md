@@ -3,10 +3,12 @@
 ## Basics
 ### String
 ```
-charAt(index);
-concat(other);
-equals(other);
-compareTo(other);
+String(byte[])
+getBytes()
+charAt(index)
+concat(other)
+equals(other)
+compareTo(other)
 indexOf(char)
 subString(begin), subString(begin, end)
 toLowerCase(), toUpperCase()
@@ -143,6 +145,7 @@ public int compareTo(Object other) {
   - Static type - the compile-time declared type. Dynamic type - the actual type of the object.
   - When doing `B b = (B)a` either A,B can inherit one another. 
 - static/regular inner classes - TBD
+  - To make them accessible from outside - class must be "public".
 
 ## Exceptions
 ```
@@ -165,26 +168,242 @@ assert condition: message;
 - checked exceptions - must catch or specify
 
 ## Files
-Streams:
+example application:
 ```
-FileInputStream, FileOutputStream
+import java.io.*;
 
-ByteArrayInputStream, ByteArrayOutputStream
+public class Main {
+    /*
+     * Interfaces and Main Methods:
+     * bytes:
+     *  - InputStream: int read(), int read(byte[]), void close()
+     *  - OutputStream: void write(int), void write(byte[]), void close()
+     * chars (int):
+     *  - Reader: int read(), int read(char[]), void close()
+     *  - Writer: void write(int), void write(char[]), void close()
+     * objects:
+     * - ObjectInput: Object readObject(), int read(), void close()
+     * - ObjectOutput: void writeObject(Object), void write(int), void close()
+     */
 
-ByteArrayOutputStream stream = new ByteArrayOutputStream();
-stream.write(data);
-stream.toByteArray();
+    public static void main(String[] args) throws Exception {
+        fileStreamExample();
+        byteArrayStreamExample();
+        pipedStreamExample();
+        filterStreamExample();
+        objectStreamExample();
+        readerWriterExample();
+    }
 
-PipedInputStream, PipedOutputStream
+    private static void fileStreamExample() throws IOException {
+        String data = "Hello, File Streams!";
+        File file = new File("example.txt");
+        FileOutputStream fos = null;
+        FileInputStream fis = null;
 
-FilterInputStream, FilterOutputStream
+        try {
+            fos = new FileOutputStream(file);
+            fos.write(data.getBytes());
+        } finally {
+            if (fos != null) fos.close();
+        }
 
-ObjectOutputStream, ObjectInputStream
+        try {
+            fis = new FileInputStream(file);
+            byte[] buffer = new byte[(int) file.length()];
+            fis.read(buffer);
+            System.out.println("File content: " + new String(buffer));
+        } finally {
+            if (fis != null) fis.close();
+        }
 
-Reader / Writer - for chars, not bytes
+        file.delete();
+    }
+
+    private static void byteArrayStreamExample() throws IOException {
+        String data = "Hello, ByteArray Streams!";
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayInputStream bais = null;
+
+        try {
+            baos.write(data.getBytes());
+            byte[] byteArray = baos.toByteArray();
+            bais = new ByteArrayInputStream(byteArray);
+            byte[] buffer = new byte[bais.available()];
+            bais.read(buffer);
+            System.out.println("ByteArray content: " + new String(buffer));
+        } finally {
+            if (bais != null) bais.close();
+            baos.close();
+        }
+    }
+
+    private static void pipedStreamExample() throws IOException {
+        PipedOutputStream pos = new PipedOutputStream();
+        PipedInputStream pis = new PipedInputStream(pos);
+
+        Thread writer = new Thread(() -> {
+            try {
+                pos.write("Hello, Piped Streams!".getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    pos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Thread reader = new Thread(() -> {
+            try {
+                byte[] buffer = new byte[1024];
+                int length = pis.read(buffer);
+                System.out.println("Piped content: " + new String(buffer, 0, length));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    pis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        writer.start();
+        reader.start();
+        try {
+            writer.join();
+            reader.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void filterStreamExample() throws IOException {
+        String data = "Hello, Filter Streams!";
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        MyFilterOutputStream fos = null;
+        MyFilterInputStream fis = null;
+
+        try {
+            fos = new MyFilterOutputStream(baos);
+            fos.write(data.getBytes());
+        } finally {
+            if (fos != null) fos.close();
+        }
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+
+        try {
+            fis = new MyFilterInputStream(bais);
+            byte[] buffer = new byte[fis.available()];
+            fis.read(buffer);
+            System.out.println("Filtered content: " + new String(buffer));
+        } finally {
+            if (fis != null) fis.close();
+            bais.close();
+        }
+    }
+
+    private static void objectStreamExample() throws IOException, ClassNotFoundException {
+        Person person = new Person("Alice", 30);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
+        ByteArrayInputStream bais = null;
+
+        try {
+            oos = new ObjectOutputStream(baos);
+            oos.writeObject(person);
+        } finally {
+            if (oos != null) oos.close();
+        }
+
+        bais = new ByteArrayInputStream(baos.toByteArray());
+
+        try {
+            ois = new ObjectInputStream(bais);
+            Person deserializedPerson = (Person) ois.readObject();
+            System.out.println("Deserialized Person: " + deserializedPerson);
+        } finally {
+            if (ois != null) ois.close();
+            if (bais != null) bais.close();
+        }
+    }
+
+    private static void readerWriterExample() throws IOException {
+        System.out.println("Enter text (press Enter to see output):");
+        BufferedReader reader = null;
+        BufferedWriter writer = null;
+
+        try {
+            reader = new BufferedReader(new InputStreamReader(System.in));
+            writer = new BufferedWriter(new OutputStreamWriter(System.out));
+
+            String input = reader.readLine();
+            writer.newLine();
+            writer.write("You entered: " + input);
+            writer.flush();
+        } finally {
+            if (reader != null) reader.close();
+            if (writer != null) writer.close();
+        }
+    }
+
+    static class MyFilterInputStream extends FilterInputStream {
+        protected MyFilterInputStream(InputStream in) {
+            super(in);
+        }
+
+        // Implementing only one does not work because they both use input stream.
+        @Override
+        public int read() throws IOException {
+            return Character.toUpperCase(super.read());
+        }
+
+        public int read(byte[] data, int offset, int length) throws IOException {
+            int result = super.read(data, offset, length);
+            for (int i = 0; i < data.length; i++) {
+                data[i] = (byte) Character.toUpperCase(data[i]);
+            }
+            return result;
+        }
+    }
+
+    static class MyFilterOutputStream extends FilterOutputStream {
+        protected MyFilterOutputStream(OutputStream out) {
+            super(out);
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            super.write(b);
+            super.write(' ');
+        }
+    }
+
+
+    static class Person implements Serializable {
+        String name;
+        int age;
+
+        Person(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        @Override
+        public String toString() {
+            return "Person{name='" + name + "', age=" + age + "}";
+        }
+    }
+}
 ```
 
-examples:
+more examples:
 ```
 // throw IOException
 FileReader in = new FileReader("f.txt");
@@ -192,8 +411,6 @@ int c = in.read();
 
 BufferedReader in = new BufferedReader(new FileReader("f.txt"));
 String st = in.readLine();
-
-System.in, System.out 
 
 Paths.get("c:\temp\g.txt");
 DirectoryStream<Path> stream = Files.newDirectoryStream(path); 
@@ -204,7 +421,7 @@ Formatter output = new Formatter("f.txt");
 output.format("format", object); 
 output.close(); 
 
-Scanner input = new Scanner(Paths.get("f.txt")); 
+Scanner input = new Scanner(Paths.get("f.txt"));  // can also get File, InputStream
 while (input.hasNext()){
     String string = input.next();
     int number = input.nextInt();
@@ -244,7 +461,8 @@ get()
 set(index, iteem)
 indexOf(item)
 contains(item)
-remove(item)
+remove(Object item)
+remove(int index
 size()
 toArray()
 iterator()
