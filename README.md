@@ -37,6 +37,7 @@ deleteCharAt(index)
 (new Random()).nextInt(bound)
 Math.random() // 0 <= r <= 1
 Math.pow()
+Math.abs()
 Math.PI
 ```
 
@@ -68,6 +69,7 @@ args[0], args[1]... - commandline arguments
 
 ## Classes
 - public class - main class of file, only one per file.
+- When getting array in ctor - consider cloning it
 
 ### Common Functions
 ```
@@ -99,6 +101,11 @@ ArrayList<String> clone = new ArrayList<String>();
 clone.addAll(members);
 
 Event[] clone = arraylist.toArray(new Event[0]);
+
+MyClass cloned = (MyClass) super.clone(); // shallow copy
+cloned.member1 = member1.clone();
+return cloned;
+
 ```
 
 ### Syntax
@@ -133,6 +140,8 @@ public int compareTo(Object other) {
 - hiding / overloading - TBD
 - super - TBD
 - polymorphism - TBD
+  - Static type - the compile-time declared type. Dynamic type - the actual type of the object.
+  - When doing `B b = (B)a` either A,B can inherit one another. 
 - static/regular inner classes - TBD
 
 ## Exceptions
@@ -212,6 +221,14 @@ String[] array = {"a","b"};
 String[] array = new String[10];
 int x[][] = {{0},{1, 1},{2, 2}};
 array.length
+
+Random rnd = new Random();
+int[][] data = new int[10][10];   // [row][col]
+for (int i = 0; i < data.length; i++)  {
+    for (int j = 0; j < data[i].length; j++) {
+        data[i][j] = rnd.nextInt(999) + 1;
+    }
+}
 
 new ArrayList<String>();
 new ArrayList<String>(10);
@@ -408,6 +425,7 @@ userChoice == JOptionPane.NO_OPTION || userChoice == JOptionPane.YES_OPTION
 ### Containers
 HBox, VBox, Pane, BorderPane (split into sections), GridPane, BorderPane, TitledPane,
 
+- It is common practice for the top-level container not to be a canvas (maybe VBox for example). 
 ### Views
 ImageView, Label, Text
 - Node (mother class of radio button class) has setUserData(), getUserData() methods.
@@ -431,9 +449,10 @@ gc.setStroke()
 GraphicsContext gc = canvas.getGraphicsContext2D();
 canvas.getWidth(), canvas.getHeight()
 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-gc.strokeText(string, x, y);
-gc.fillRect(x, y, w, h);
 gc.strokeLine(x1, y1, x2, y2);
+gc.strokeText(string, x, y);
+gc.strokeRect(x, y, w, h);
+gc.fillRect(x, y, w, h);
 gc.fillOval(x, y, w, h)
 
 message.setText(userMessage);
@@ -477,6 +496,29 @@ listView.getSelectionModel().selectedItemProperty().addListener(
 @FXML void buttonPressed(ActionEvent event) {
     String id = ((Button) event.getSource()).getId();
 }
+
+onMouseClicked
+@FXML void clicked(MouseEvent e) {
+    event.getX(), event.getY()    // ints
+}
+
+Button button = new Button("Done");
+button.setId("doneButton")
+gridPane.add(button, col, row);
+button.setOnAction(method) 
+
+TextInputDialog dialog = new TextInputDialog();
+dialog.setTitle("Question");
+dialog.setHeaderText("1+1=?");
+dialog.setContentText("Answer:");
+String s = dialog.showAndWait().orElse("0");
+System.out.println(s);
+
+Alert alert = new Alert(Alert.AlertType.INFORMATION);
+alert.setTitle("Information");
+alert.setHeaderText(null);
+alert.setContentText("message");
+alert.show();
 ```
 More:
 - ToggleGroup
@@ -516,11 +558,31 @@ class MyClass<T> {
     }
     public boolean f2(T item) {
     }
-    public <T extends Comparable<T>> T f3( T[] array) {}
-
-    // Give OtherClass or class that inherits from it
-    public void f4(MyClass<? extends OtherClass> other) {}
 }
+
+public <T extends Comparable<T>> T f3( T[] array) {}
+
+// Give OtherClass or class that inherits from it
+public void f4(MyClass<? extends OtherClass> other) {}
+```
+
+## Examples
+```
+interface GetTransformable<T, S> {
+    public S transform(T arg) throws Exception;
+}
+class Convertor implements GetTransformable<ArrayList<String>, Integer> {
+    public Integer transform(ArrayList<String> arg) throws Exception {
+        int sum = 0;
+        for (String item : arg) {
+            sum += Integer.parseInt(item);
+        }
+        return sum;
+    }
+}
+
+// list that accepts only of class A (2024 94a)
+class MyList<T extends A> implements List<A>
 ```
 
 # Concurrency
@@ -584,9 +646,11 @@ cond.signalAll()
 ```
 More:
 - notify(), notifyAll() - will wake one/all waiting threads on either method, one after the other
+  - can be called only from synchronized functions. 
 - wait(milliseconds)
 - useful class - SafeQueue - private member linkedlist, synchronized insert and pop
 - useful class - Event - private member bool, synchronized get and set
+- static synchronized - only one thread can run
 
 # Network
 ```
@@ -652,3 +716,7 @@ DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 socket.receive(receivePacket);
 socket.send(new DatagramPacket(data, data.length, receivePacket.getAddress(), receivePacket.getPort()));
 ```
+
+# Note:
+- Check if parameters are null or length is 0
+- Pay attention to types in signatures (i.e `equals(MyClass) or equals(Object))
