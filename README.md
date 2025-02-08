@@ -428,6 +428,43 @@ while (input.hasNext()){
 }
 input.close(); 
 ```
+### PrintStream
+```
+PrintStream ps = new PrintStream(System.out);
+ps.println("Hello, PrintStream!");
+ps.printf("Formatted: %d%n", 100);
+ps.close();
+```
+### DataStream
+Write/read primitive types to binary form
+```
+DataOutputStream dos = new DataOutputStream(new FileOutputStream("data.bin"));
+dos.writeInt(42);
+dos.writeDouble(3.14);
+dos.writeBoolean(true);
+dos.close();
+DataInputStream dis = new DataInputStream(new FileInputStream("data.bin"))
+int intValue = dis.readInt();
+double doubleValue = dis.readDouble();
+```
+### LineNumberInputStream 
+keeps track of line number
+```
+LineNumberInputStream lnStream = new LineNumberInputStream(fis);
+int data;
+while ((data = lnStream.read()) != -1) {
+    System.out.println("Line number: " + lnStream.getLineNumber() + " - " + (char) data);
+}
+```
+
+### PushbackInputStream
+has unread() method
+```
+PushbackInputStream pbis = new PushbackInputStream(bais);
+int ch = pbis.read();
+pbis.unread(ch); 
+System.out.println((char) pbis.read());
+```
 
 ### I/O Class Hierarchy
 TBD
