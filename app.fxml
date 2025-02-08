@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="AppController">
+    <Canvas fx:id="canvas" width="300" height="200" layoutX="20" layoutY="50"/>
+</AnchorPane>
