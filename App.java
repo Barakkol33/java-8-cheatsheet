@@ -7,7 +7,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("App");
-        stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("app.fxml"))));
+        stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("App.fxml"))));
         stage.show();
     }
 
