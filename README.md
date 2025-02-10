@@ -992,36 +992,3 @@ String[] array = arraylist.toArray(new String[0]);
 int[] numbers = IntStream.generate(() -> rand.nextInt(bound)).limit(n).toArray();
 ArrayList<String> arraylist2 = (ArrayList<String>) Arrays.stream(arraylist.toArray(new MyClass[0])).map(item -> item + "!").collect(Collectors.toCollection(ArrayList::new))); // to convert to array: .toArray(MyClass[]::new)
 IntStream.range(begin, end).mapToObj(String::valueOf).toArray(String[]::new)
-
-Button button = new Button("Done");
-button.setId("doneButton")
-gridPane.add(button, col, row);
-button.setOnAction(method) 
-
-syncThread = new Thread(new Task<Void>() {
-    @Override
-    protected Void call() {
-        return null;
-    }
-});
-155 - generic implementation
-
-# TCP
-socket = new Socket(server, port); // throws UnknownHostException, IOException
-ServerSocket serverSocket = new ServerSocket(PORT); // throws IOException
-Socket socket = serverSocket.accept();  // throws IOException
-in = socket.getInputStream();  // throws IOException
-out = socket.getOutputStream(); // throws IOException
-String host = socket.getInetAddress().getHostName;
-
-## UDP
-DatagramSocket socket = new DatagramSocket()
-socket.send(new DatagramPacket(data, data.length,  InetAddress.getByName(server), port)); // throws IOException
-DatagramSocket socket = new DatagramSocket(PORT);
-byte[] data = new byte[1];
-DatagramPacket receivePacket = new DatagramPacket(data, data.length); // throws IOException
-socket.send(new DatagramPacket(data, data.length, receivePacket.getAddress(), receivePacket.getPort()));
-
-# Note:
-- (from above)
-```
