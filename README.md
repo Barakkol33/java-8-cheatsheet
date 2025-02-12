@@ -711,6 +711,7 @@ gc.fillRect(x, y, w, h);
 gc.fillOval(x, y, w, h)
 
 message.setText(userMessage);
+textfield.getText();
 
 radiobutton.setSelected(false);
 
