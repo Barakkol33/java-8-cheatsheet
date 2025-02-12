@@ -760,7 +760,7 @@ onMouseClicked
 Button button = new Button("Done");
 button.setId("doneButton")
 gridPane.add(button, col, row);
-button.setOnAction(method) 
+button.setOnAction(e -> {}) 
 
 TextInputDialog dialog = new TextInputDialog();
 dialog.setTitle("Question");
@@ -820,6 +820,9 @@ public <T extends Comparable<T>> T f3( T[] array) {}
 // Give OtherClass or class that inherits from it
 public void f4(MyClass<? extends OtherClass> other) {}
 ```
+- Wildcards 
+  - Can't be used in generic declaration, only in another generic usage
+  - There is no connection between appearances.
 
 ## Examples
 ```
@@ -898,6 +901,11 @@ Condition cond = lock.newCondition();
 cond.await() // throws InterruptedException
 cond.signal()
 cond.signalAll()
+
+synchronized(this) {
+     System.out.println("synchronized");
+     // perform stuff for which you require synchronization
+}
 ```
 More:
 - notify(), notifyAll() - will wake one/all waiting threads on either method, one after the other
@@ -981,6 +989,8 @@ socket.send(new DatagramPacket(data, data.length, receivePacket.getAddress(), re
 - "Dynamic linking" - in inheritance
 - Two methods cannot be with same signatures except "static"
 - ? cannot be used in generic function signature, can be used in its parameters (i.e ArrayList<? extends String>)
+- `private abstract` is invalid - the definitions contradict each other. 
+- Even if `B extends A`, `List<B>` cannot extend `List<A>`.
 # Marked
 ```
 # General
