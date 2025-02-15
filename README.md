@@ -143,7 +143,16 @@ public int compareTo(Object other) {
 - super - TBD
 - polymorphism - TBD
   - Static type - the compile-time declared type. Dynamic type - the actual type of the object.
-  - When doing `B b = (B)a` either A,B can inherit one another. 
+  - When doing `B b = (B)a` either A,B can inherit one another.
+  - Access modifiers when overriding:
+    - valid:
+      - default (package-private) → protected/public
+      - protected → protected/public
+      - public → public
+    - invalid (examples):
+      - private → (Cannot be overridden, but can be redefined)
+      - protected -> private
+      - public -> protected
 - static/regular inner classes - TBD
   - To make them accessible from outside - class must be "public".
 
